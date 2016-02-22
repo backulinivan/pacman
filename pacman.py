@@ -125,17 +125,9 @@ class Map:
             for x in range(len(self.map[y])):
                 if type(self.map[y][x]) == Wall:
                     self.map[y][x].draw(screen)
-#            # self.map.append([])
-#            # for (x,c) in enumerate(l):
-#            #     if txt_map[y][x] == '#':
-#            #         self.map[y].append(Wall(x, y, tile_size, map_size))
-#            self.map.append([Wall(x, y, tile_size, map_size) for (x,c) in enumerate(l) if c == '#'])
 
-#    def draw(self, screen):
-#        for y in range(len(self.map)):
-#            for x in range(len(map[y])):
-#                if self.map[y][x]:
-#                    self.map[y][x].draw(screen)
+    def is_wall(self, x, y):
+        return type(self.map[y][x]) == Wall
 
 def process_events(events, packman):
     for event in events:

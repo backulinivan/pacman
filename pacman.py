@@ -105,6 +105,37 @@ class Pacman(GameObject):
 
         self.set_coord(self.x, self.y)
 
+class Wall(GameObject):
+    def __init__(self, x, y, tile_size, map_size):
+        GameObject.__init__(self, './resources/wall.png', x, y, tile_size, map_size)
+
+class Map:
+    def __init__(self, file):
+        self.map = [[None for x in range(16)] for y in range(16)]
+        f = open(file, 'r')
+        txt_map = f.readlines()
+
+        for (y, l) in enumerate(txt_map):
+            for (x, c) in enumerate(l):
+                if txt_map[y][x] == '#':
+                    self.map[y][x] = Wall(x, y, tile_size, map_size)
+
+    def draw_map(self):
+        for y in range(len(self.map)):
+            for x in range(len(self.map[y])):
+                if type(self.map[y][x]) == Wall:
+                    self.map[y][x].draw(screen)
+#            # self.map.append([])
+#            # for (x,c) in enumerate(l):
+#            #     if txt_map[y][x] == '#':
+#            #         self.map[y].append(Wall(x, y, tile_size, map_size))
+#            self.map.append([Wall(x, y, tile_size, map_size) for (x,c) in enumerate(l) if c == '#'])
+
+#    def draw(self, screen):
+#        for y in range(len(self.map)):
+#            for x in range(len(map[y])):
+#                if self.map[y][x]:
+#                    self.map[y][x].draw(screen)
 
 def process_events(events, packman):
     for event in events:
@@ -131,6 +162,8 @@ if __name__ == '__main__':
     pacman = Pacman(5, 5, tile_size, map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
+    map = Map('map.txt')
+    print(map.map)
 
     while 1:
         process_events(pygame.event.get(), pacman)
@@ -140,4 +173,5 @@ if __name__ == '__main__':
         draw_background(screen, background)
         pacman.draw(screen)
         ghost.draw(screen)
+        map.draw_map()
         pygame.display.update()

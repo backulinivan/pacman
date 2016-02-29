@@ -91,7 +91,7 @@ class Pacman(GameObject):
             self.x += self.velocity
             if self.x >= self.map_size-1:
                 self.x = self.map_size-1
-        elif self.direction == 2 and not Map.is_wall(_map, int(self.x), int(self.y-1)):
+        elif self.direction == 2 and not Map.is_wall(_map, int(self.x), int(self.y+1)):
             self.y += self.velocity
             if self.y >= self.map_size-1:
                 self.y = self.map_size-1
@@ -99,7 +99,7 @@ class Pacman(GameObject):
             self.x -= self.velocity
             if self.x <= 0:
                 self.x = 0
-        elif self.direction == 4 and not Map.is_wall(_map, int(self.x), int(self.y+1)):
+        elif self.direction == 4 and not Map.is_wall(_map, int(self.x), int(self.y-1)):
             self.y -= self.velocity
             if self.y <= 0:
                 self.y = 0

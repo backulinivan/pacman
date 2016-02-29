@@ -37,7 +37,7 @@ class GameObject(pygame.sprite.Sprite):
         self.y = y
         self.screen_rect = Rect(floor(x) * self.tile_size, floor(y) * self.tile_size, self.tile_size, self.tile_size )
 
-    def game_tick(self):
+    def game_tick(self, _map):
         self.tick += 1
 
     def draw(self, scr):
@@ -50,8 +50,8 @@ class Ghost(GameObject):
         self.direction = 0
         self.velocity = 4.0 / 10.0
 
-    def game_tick(self):
-        super(Ghost, self).game_tick()
+    def game_tick(self, _map):
+        super(Ghost, self).game_tick(_map)
         if self.tick % 20 == 0 or self.direction == 0:
             self.direction = random.randint(1, 4)
 
@@ -84,21 +84,22 @@ class Pacman(GameObject):
         self.direction = 0
         self.velocity = 4.0 / 10.0
 
-    def game_tick(self):
-        super(Pacman, self).game_tick()
-        if self.direction == 1:
+
+    def game_tick(self, _map):
+        super(Pacman, self).game_tick(_map)
+        if self.direction == 1 and not Map.is_wall(_map, int(self.x+1), int(self.y)):
             self.x += self.velocity
             if self.x >= self.map_size-1:
                 self.x = self.map_size-1
-        elif self.direction == 2:
+        elif self.direction == 2 and not Map.is_wall(_map, int(self.x), int(self.y-1)):
             self.y += self.velocity
             if self.y >= self.map_size-1:
                 self.y = self.map_size-1
-        elif self.direction == 3:
+        elif self.direction == 3 and not Map.is_wall(_map, int(self.x-1), int(self.y)):
             self.x -= self.velocity
             if self.x <= 0:
                 self.x = 0
-        elif self.direction == 4:
+        elif self.direction == 4 and not Map.is_wall(_map, int(self.x), int(self.y+1)):
             self.y -= self.velocity
             if self.y <= 0:
                 self.y = 0
@@ -127,7 +128,10 @@ class Map:
                     self.map[y][x].draw(screen)
 
     def is_wall(self, x, y):
-        return type(self.map[y][x]) == Wall
+        if y < len(self.map) and x < len(self.map[y]):
+            return type(self.map[y][x]) == Wall
+
+
 
 def process_events(events, packman):
     for event in events:
@@ -160,8 +164,8 @@ if __name__ == '__main__':
     while 1:
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
-        ghost.game_tick()
-        pacman.game_tick()
+        ghost.game_tick(map)
+        pacman.game_tick(map)
         draw_background(screen, background)
         pacman.draw(screen)
         ghost.draw(screen)

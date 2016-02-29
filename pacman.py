@@ -159,7 +159,6 @@ if __name__ == '__main__':
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
     map = Map('map.txt')
-    print(map.map)
 
     while 1:
         process_events(pygame.event.get(), pacman)

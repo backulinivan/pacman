@@ -148,6 +148,7 @@ class Wall(GameObject):
 class Map:
     def __init__(self, file):
         self.map = [[None for x in range(16)] for y in range(16)]
+        self.dots_num = 0
         f = open(file, 'r')
         txt_map = f.readlines()
 
@@ -156,11 +157,11 @@ class Map:
                 if txt_map[y][x] == '#':
                     self.map[y][x] = Wall(x, y, tile_size, map_size)
                 elif txt_map[y][x] == '.':
-                    self.map[y][x] = Dot(x, y, tile_size, map_size)
+                    self.map[y][x] = Dot(x, y, tile_size, map_size); self.dots_num += 1
                 elif txt_map[y][x] == '^':
-                    self.map[y][x] = Dot(x, y, tile_size, map_size, 'speed')
+                    self.map[y][x] = Dot(x, y, tile_size, map_size, 'speed'); self.dots_num += 1
                 elif txt_map[y][x] == '&':
-                    self.map[y][x] = Dot(x, y, tile_size, map_size, 'eat')
+                    self.map[y][x] = Dot(x, y, tile_size, map_size, 'eat'); self.dots_num += 1
 
     def draw_map(self):
         for y in range(len(self.map)):
@@ -178,6 +179,7 @@ class Map:
 
     def remove_object(self, x, y):
         self.map[y][x] = None
+        self.dots_num -= 1
 
 
 def process_events(events, packman):
@@ -207,7 +209,8 @@ if __name__ == '__main__':
     screen = pygame.display.get_surface()
     map = Map('map.txt')
 
-    while 1:
+    while map.dots_num > 0:
+        print(map.dots_num)
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
         pacman.game_tick(map)
@@ -224,4 +227,6 @@ if __name__ == '__main__':
         pacman.draw(screen)
 
         pygame.display.update()
+
+    print('You win!')
 

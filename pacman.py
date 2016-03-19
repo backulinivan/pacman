@@ -80,28 +80,42 @@ class Ghost(GameObject):
 
 
 class Dot(GameObject):
-    def __init__(self, x, y, tile_size, map_size):
+    def __init__(self, x, y, tile_size, map_size, effect = 'zero'):
         GameObject.__init__(self, './resources/food.png', x, y, tile_size, map_size)
+        self.effect = effect
+        if effect == 'speed':
+            self.image = pygame.image.load('./resources/speed_bonus.png')
+        elif effect == 'eat':
+            self.image = pygame.image.load('./resources/eat_bonus.png')
 
 
 class Pacman(GameObject):
     def __init__(self, x, y, tile_size, map_size):
         GameObject.__init__(self, './resources/pacman_right.png', x, y, tile_size, map_size)
         self.direction = 0
-        self.velocity = 5.0 / 10.0
+        self.velocity = 4.0 / 10.0
+        self.tick_speed = 0
+        self.tick_eat = 0
+        self.hungry = False
 
 
     def game_tick(self, _map):
         super(Pacman, self).game_tick(_map)
 
-        if self.direction == 1 and Map.is_dot(_map, int(self.x+1), int(self.y)):
-            Map.remove_object(_map, int(self.x+1), int(self.y))
-        elif self.direction == 2 and Map.is_dot(_map, int(self.x), int(self.y+1)):
-            Map.remove_object(_map, int(self.x), int(self.y+1))
-        elif self.direction == 3 and Map.is_dot(_map, int(self.x-1), int(self.y)):
-            Map.remove_object(_map, int(self.x-1), int(self.y))
-        elif self.direction == 4 and Map.is_dot(_map, int(self.x), int(self.y-1)):
-            Map.remove_object(_map, int(self.x), int(self.y-1))
+        if Map.is_dot(_map, int(self.x), int(self.y)):
+            if _map.map[int(self.y)][int(self.x)].effect == 'speed':
+                self.tick_speed = self.tick
+                self.velocity = 8.0 / 10.0
+            elif _map.map[int(self.y)][int(self.x)].effect == 'eat':
+                self.tick_eat = self.tick
+                self.hungry = True
+
+            Map.remove_object(_map, int(self.x), int(self.y))
+        if self.tick - self.tick_speed == 50:
+            self.velocity = 4.0 / 10.0
+
+        if self.tick - self.tick_eat == 50:
+            self.hungry = False
 
         if self.direction == 1 and not Map.is_wall(_map, int(self.x+1), int(self.y)):
             self.image = pygame.image.load('./resources/pacman_right.png')
@@ -143,6 +157,10 @@ class Map:
                     self.map[y][x] = Wall(x, y, tile_size, map_size)
                 elif txt_map[y][x] == '.':
                     self.map[y][x] = Dot(x, y, tile_size, map_size)
+                elif txt_map[y][x] == '^':
+                    self.map[y][x] = Dot(x, y, tile_size, map_size, 'speed')
+                elif txt_map[y][x] == '&':
+                    self.map[y][x] = Dot(x, y, tile_size, map_size, 'eat')
 
     def draw_map(self):
         for y in range(len(self.map)):
@@ -160,8 +178,6 @@ class Map:
 
     def remove_object(self, x, y):
         self.map[y][x] = None
-
-
 
 
 def process_events(events, packman):
@@ -185,10 +201,7 @@ if __name__ == '__main__':
     init_window()
     tile_size = 32
     map_size = 16
-    ghost1 = Ghost(0, 5, tile_size, map_size)
-    ghost2 = Ghost(10, 10, tile_size, map_size)
-    ghost3 = Ghost(8, 8, tile_size, map_size)
-    ghost4 = Ghost(9, 9, tile_size, map_size)
+    Ghosts = [Ghost(0, 0, tile_size, map_size), Ghost(10, 10, tile_size, map_size), Ghost(8, 8, tile_size, map_size), Ghost(9, 9, tile_size, map_size)]
     pacman = Pacman(5, 5, tile_size, map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
@@ -197,16 +210,18 @@ if __name__ == '__main__':
     while 1:
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
-        ghost1.game_tick(map)
-        ghost2.game_tick(map)
-        ghost3.game_tick(map)
-        ghost4.game_tick(map)
         pacman.game_tick(map)
         draw_background(screen, background)
-        pacman.draw(screen)
-        ghost1.draw(screen)
-        ghost2.draw(screen)
-        ghost3.draw(screen)
-        ghost4.draw(screen)
         map.draw_map()
+        for ghost in Ghosts:
+            ghost.game_tick(map)
+            if int(ghost.y) == int(pacman.y) and int(ghost.x) == int(pacman.x):
+                if pacman.hungry:
+                    Ghosts.remove(ghost)
+                else:
+                    sys.exit('You lost')
+            ghost.draw(screen)
+        pacman.draw(screen)
+
         pygame.display.update()
+

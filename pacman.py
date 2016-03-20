@@ -203,14 +203,13 @@ if __name__ == '__main__':
     init_window()
     tile_size = 32
     map_size = 16
-    Ghosts = [Ghost(0, 0, tile_size, map_size), Ghost(10, 10, tile_size, map_size), Ghost(8, 8, tile_size, map_size), Ghost(9, 9, tile_size, map_size)]
+    Ghosts = [Ghost(7, 11, tile_size, map_size), Ghost(9, 0, tile_size, map_size), Ghost(8, 8, tile_size, map_size), Ghost(9, 9, tile_size, map_size)]
     pacman = Pacman(5, 5, tile_size, map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
     map = Map('map.txt')
 
     while map.dots_num > 0:
-        print(map.dots_num)
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
         pacman.game_tick(map)

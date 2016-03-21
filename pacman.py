@@ -182,7 +182,7 @@ class Map:
         self.dots_num -= 1
 
 
-def process_events(events, packman):
+def process_events(events, pacman):
     for event in events:
         if (event.type == QUIT) or (event.type == KEYDOWN and event.key == K_ESCAPE):
             sys.exit(0)

@@ -8,7 +8,7 @@ import random
 def init_window():
     pygame.init()
     pygame.display.set_mode((512, 512))
-    pygame.display.set_caption('Packman')
+    pygame.display.set_caption('Pacman')
 
 
 def draw_background(scr, img=None):
@@ -188,15 +188,15 @@ def process_events(events, pacman):
             sys.exit(0)
         elif event.type == KEYDOWN:
             if event.key == K_LEFT:
-                packman.direction = 3
+                pacman.direction = 3
             elif event.key == K_RIGHT:
-                packman.direction = 1
+                pacman.direction = 1
             elif event.key == K_UP:
-                packman.direction = 4
+                pacman.direction = 4
             elif event.key == K_DOWN:
-                packman.direction = 2
+                pacman.direction = 2
             elif event.key == K_SPACE:
-                packman.direction = 0
+                pacman.direction = 0
 
 
 if __name__ == '__main__':
